@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
+import { saveUrl } from "../../lib/db";
 
 export const runtime = "nodejs";
 
@@ -71,7 +72,7 @@ export async function POST(request) {
             message: "Original URL is required.",
           },
         },
-        { status: 200 }
+        { status: 400 }
       );
     }
 
@@ -94,7 +95,7 @@ export async function POST(request) {
               `URL must be ${MAX_URL_LENGTH} characters or fewer.`,
           },
         },
-        { status: 200 }
+        { status: 400 }
       );
     }
 
@@ -125,7 +126,7 @@ export async function POST(request) {
               "URL must start with http:// or https://.",
           },
         },
-        { status: 200 }
+        { status: 400 }
       );
     }
 
@@ -151,7 +152,7 @@ export async function POST(request) {
               "URL must start with http:// or https://.",
           },
         },
-        { status: 200 }
+        { status: 400 }
       );
     }
 
@@ -163,6 +164,9 @@ export async function POST(request) {
      * shortCode와 shortUrl을 생성합니다.
      */
     const shortCode = createShortCode(originalUrl);
+
+    await saveUrl(shortCode, originalUrl);
+
     const baseUrl = new URL(request.url).origin;
 
 
@@ -178,7 +182,7 @@ export async function POST(request) {
         shortUrl: `${baseUrl}/${shortCode}`,
         originalUrl,
       },
-      { status: 200 }
+      { status: 201 }
     );
 
   } catch {
@@ -198,7 +202,7 @@ export async function POST(request) {
           message: "Failed to create short URL.",
         },
       },
-      { status: 200 }
+      { status: 500 }
     );
   }
 }
