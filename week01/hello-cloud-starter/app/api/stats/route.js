@@ -24,7 +24,7 @@ export async function GET() {
         },
         urls: urls/* TODO */,
       },
-      {
+      { 
         headers: {
           "Cache-Control": "no-store",
         },
